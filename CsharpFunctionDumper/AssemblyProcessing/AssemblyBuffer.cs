@@ -51,7 +51,7 @@ namespace CsharpFunctionDumper.AssemblyProcessing
         }
 
         /// <summary>
-        /// Reads 4 Bytes from the buffer and converts it to a uint. (It's presumed it's signed.)
+        /// Reads 4 Bytes from the buffer and converts it to a uint. (It's presumed it's unsigned.)
         /// </summary>
         /// <returns></returns>
         public uint ReadDWord()
