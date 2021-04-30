@@ -3,6 +3,7 @@
     /// <summary>
     /// For more information check:
     ///     https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_optional_header32
+    ///     https://www.red-gate.com/simple-talk/blogs/anatomy-of-a-net-assembly-pe-headers/
     /// </summary>
     public class OptionalHeader
     {
@@ -69,6 +70,10 @@
         
         public uint NumberOfRvaAndSizes { get; private set; }
 
+        public DataDirectory[] DataDirectories;
+        
+        public const uint ImageNumberOfDirectoryEntries = 16;
+        
         public OptionalHeader(AssemblyBuffer buffer)
         {
             this.Magic = buffer.ReadWord();
@@ -111,6 +116,13 @@
             
             this.LoaderFlags = buffer.ReadDWord();
             this.NumberOfRvaAndSizes = buffer.ReadDWord();
+
+            this.DataDirectories = new DataDirectory[]{};
+            
+            for (int i = 0; i < ImageNumberOfDirectoryEntries; i++)
+            {
+                this.DataDirectories[i] = new DataDirectory(buffer);
+            }
 
         }
     }
