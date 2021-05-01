@@ -70,9 +70,11 @@
         
         public uint NumberOfRvaAndSizes { get; private set; }
 
+        public const uint ImageNumberOfDirectoryEntries = 16;
+        
         public DataDirectory[] DataDirectories;
         
-        public const uint ImageNumberOfDirectoryEntries = 16;
+        
         
         public OptionalHeader(AssemblyBuffer buffer)
         {
@@ -117,8 +119,8 @@
             this.LoaderFlags = buffer.ReadDWord();
             this.NumberOfRvaAndSizes = buffer.ReadDWord();
 
-            this.DataDirectories = new DataDirectory[]{};
-            
+            this.DataDirectories = new DataDirectory[ImageNumberOfDirectoryEntries];
+
             for (int i = 0; i < ImageNumberOfDirectoryEntries; i++)
             {
                 this.DataDirectories[i] = new DataDirectory(buffer);
