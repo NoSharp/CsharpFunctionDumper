@@ -28,7 +28,7 @@ namespace CsharpFunctionDumper.AssemblyProcessing
         /// </summary>
         /// <param name="amount"> the amount of bytes to read. </param>
         /// <returns> The bytes read from the buffer.</returns>
-        private byte[] ReadBytes(int amount)
+        private byte[] ReadBytes(uint amount)
         {
             byte[] data = new byte[amount];
             
@@ -67,6 +67,25 @@ namespace CsharpFunctionDumper.AssemblyProcessing
         public byte ReadByte()
         {
             return this.ReadBytes(1)[0];
+        }
+
+        /// <summary>
+        /// Reads the next "length" of bytes and convers them into characters
+        /// which are appended together to make a string.
+        /// </summary>
+        /// <param name="length"> The amount of bytes to read</param>
+        /// <returns>A string made from those bytes.</returns>
+        public string ReadStringOfLength(uint length)
+        {
+            byte[] readBytes = ReadBytes(length);
+            string converted = "";
+            
+            for (var i = 0; i < readBytes.Length; i++)
+            {
+                converted += (char) readBytes[i];
+            }
+
+            return converted;
         }
 
         /// <summary>
