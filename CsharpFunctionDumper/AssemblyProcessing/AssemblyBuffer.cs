@@ -68,9 +68,18 @@ namespace CsharpFunctionDumper.AssemblyProcessing
         {
             return this.ReadBytes(1)[0];
         }
+        
+        /// <summary>
+        /// Reads a QWord from the buffer.
+        /// </summary>
+        /// <returns> The QWord from the Buffer</returns>
+        public ulong ReadQWord()
+        {
+            return BitConverter.ToUInt64(this.ReadBytes(8));
+        }
 
         /// <summary>
-        /// Reads the next "length" of bytes and convers them into characters
+        /// Reads the next "length" of bytes and converts them into characters
         /// which are appended together to make a string.
         /// </summary>
         /// <param name="length"> The amount of bytes to read</param>
@@ -86,6 +95,31 @@ namespace CsharpFunctionDumper.AssemblyProcessing
             }
 
             return converted;
+        }
+
+        /// <summary>
+        /// Reads a null terminated string from the buffer.
+        /// </summary>
+        /// <returns> The string converted from bytes .</returns>
+        public string ReadString()
+        {
+            string converted = "";
+            byte val;
+            while(true)
+            {
+                val = ReadByte();
+                
+                if (val == 0x0)
+                {
+                    // We're reading a Null terminated string so break out of the loop.
+                    break;
+                }
+
+                converted += (char) val;
+            }
+
+            return converted;
+
         }
 
         /// <summary>
