@@ -11,7 +11,7 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor
     ///         (pretty sure they're written by the same person)
     ///     http://secana.github.io/PeNet/api/PeNet.Structures.IMAGE_COR20_HEADER.html
     /// </summary>
-    public class CLIHeader
+    public class CLRHeader
     {
         /// <summary>
         /// The size of the header
@@ -39,7 +39,7 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor
         public DataDirectory ManagedNativeHeader { get; private set; }
 
 
-        public CLIHeader(AssemblyBuffer buffer, OptionalHeader.OptionalHeader header, SectionsHeaders sectionsHeaders)
+        public CLRHeader(AssemblyBuffer buffer, OptionalHeader.OptionalHeader header, SectionsHeaders sectionsHeaders)
         {
             this.cb = buffer.ReadDWord();
             this.MajorRuntimeVersion = buffer.ReadWord();
