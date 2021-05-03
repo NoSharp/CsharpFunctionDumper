@@ -49,13 +49,12 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing
 
             this.Streams[(uint)MetaDataStreamType.DEFS_AND_REFS] = new DefsAndRefsStream(buffer, clrHeader,this);
             this.Streams[(uint)MetaDataStreamType.STRINGS] = new StringStream(buffer, clrHeader);
-
-            foreach (var streamHeader in this.Streams)
-            {
-                if (streamHeader == null) continue;
-                streamHeader.CacheBuffer(buffer);
-                streamHeader.ProcessTables(buffer);
-            }
+            
+            this.Streams[(uint)MetaDataStreamType.STRINGS].CacheBuffer(buffer);
+            this.Streams[(uint)MetaDataStreamType.STRINGS].ProcessTables(buffer);
+            
+            this.Streams[(uint)MetaDataStreamType.DEFS_AND_REFS].CacheBuffer(buffer);
+            this.Streams[(uint)MetaDataStreamType.DEFS_AND_REFS].ProcessTables(buffer);
             
             DefsAndRefsStream defsAndRefsStream = (DefsAndRefsStream)this.Streams[(uint) MetaDataStreamType.DEFS_AND_REFS];
 
