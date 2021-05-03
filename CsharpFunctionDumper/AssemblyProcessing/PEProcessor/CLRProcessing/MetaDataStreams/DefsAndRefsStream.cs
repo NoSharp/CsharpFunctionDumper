@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.MetaDataStreams.TableRows;
-using CsharpFunctionDumper.AssemblyProcessing.PEProcessor.MetaDataStreams;
 
 namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.MetaDataStreams
 {
@@ -24,6 +25,8 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
 
         public uint[] TableLengths { get; private set; }
 
+        public Dictionary<MetaDataTableType, Type> TableRowTypes { get; private set; }
+
         public Dictionary<MetaDataTableType, List<TableRow>> TableRows { get; private set; }
 
         public DefsAndRefsStream(AssemblyBuffer buffer, CLRHeader clrHeader, MetaDataHeader metaDataHeader) : base(buffer,clrHeader)
@@ -31,7 +34,6 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
             this._metaDataHeader = metaDataHeader;
             this.TableLengths = new uint[64];
             this.TableRows = new Dictionary<MetaDataTableType, List<TableRow>>();
-
         }
 
 
@@ -48,17 +50,18 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
             this.TablesPresent = buffer.ReadQWord(); // We need to read all of the tables present in the assembly
             this.TablesSorted = buffer.ReadQWord(); // What tables are sorted
 
+            this.TableRowTypes = this.GetPopulatedTableRowTypes();
             
+            // Check which types apply to the current stream.
             for( int i = 0; i < 64; i++)
             {
-               
+
                 if (!Enum.IsDefined(typeof(MetaDataTableType), i))
                 {
                     continue;
                 }
 
                 MetaDataTableType tableType = (MetaDataTableType) i;
-                
                 ulong bitmask = (ulong)1 << (int)tableType;
                 
                 if ((this.TablesPresent & bitmask) != 0 || bitmask == 0)
@@ -66,21 +69,68 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
                     this.TableLengths[(ulong) tableType] = buffer.ReadDWord();
                 }
             }
+
+            this.PopulateTableRows(buffer);
+        }
+
+        private MetaDataTableType GetMetaTableTypeFromType(Type type)
+        {
+            return (MetaDataTableType) type.GetField("OwnerTable", BindingFlags.Static | BindingFlags.Public).GetValue(null);
+        }
+
+        private List<Type> GetTableRows()
+        {
+            return (from t in Assembly.GetExecutingAssembly()
+                    .GetTypes()
+                    .Where(x => x.Namespace ==
+                        "CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.MetaDataStreams.TableRows")
+                where !t.IsAbstract
+                select t).ToList();
+        }
+
+        private Dictionary<MetaDataTableType, Type> GetPopulatedTableRowTypes()
+        {
+            Dictionary<MetaDataTableType, Type> tableTypes = new Dictionary<MetaDataTableType, Type>();
+            List<Type> rows = this.GetTableRows();
             
-            this.TableRows[MetaDataTableType.Module] = new List<TableRow>();
-            TableRow row = new ModuleTableRow(buffer);
-            row.Read(buffer);
-            this.TableRows[MetaDataTableType.Module].Add(row);
-            /*
-            foreach (var tableLength in this.TableLengths)
+            foreach (var type in rows)
+                tableTypes.Add(this.GetMetaTableTypeFromType(type), type);
+            
+            return tableTypes;
+        }
+        
+
+        private void PopulateTableRows(AssemblyBuffer buffer)
+        {
+            for (int idx = 0; idx < this.TableLengths.Length; idx++)
             {
-                //Console.WriteLine();
-                MetaDataTableType tableType = (MetaDataTableType) tableLength;
-                //uint tableSize = this.TableLengths[tableLength];
+                MetaDataTableType tableType = (MetaDataTableType) idx;
+                // These weren't valid in the present DWORD.
+                if (this.TableLengths[idx] == 0) continue;
+                if (!this.TableRowTypes.ContainsKey(tableType))
+                {
+                    Console.WriteLine($"WARNING: NO TYPE HANDLER FOR: {tableType.ToString()}");
+                    continue;
+                }
+
+                Type rowType = this.TableRowTypes[tableType];
+                List <TableRow> tableRows = new List<TableRow>();
+                for (int tableIdx = 0; tableIdx < this.TableLengths[idx]; tableIdx++)
+                {
+                    TableRow row = (TableRow)Activator.CreateInstance(rowType, buffer);
+                    if (row == null)
+                    {
+                        Console.WriteLine($"WARNING: No Row type for :{tableType.ToString()}");
+                        continue;
+                    }
+
+                    row.Read(buffer);
+                    Console.WriteLine($"Displaying {tableType.ToString()}@{tableIdx}: {row.Display()}");
+                    tableRows.Add(row);
+                }
                 
-                Console.WriteLine(row.Display());
-                this.TableRows[tableType].Add(row);
-            }*/
+                this.TableRows.Add(tableType, tableRows);
+            }
         }
 
         public string GetStringFromStringTable(uint idx)
