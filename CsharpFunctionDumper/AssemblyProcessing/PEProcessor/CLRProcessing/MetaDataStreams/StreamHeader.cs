@@ -13,10 +13,7 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
         public uint AbsoluteAddress { get; private set; }
 
         protected byte[] _cachedBuffer { get; private set; }
-
-        private CLRHeader header { get; }
-
-        private AssemblyBuffer buffer { get; }
+        
 
 
         public StreamHeader(AssemblyBuffer buffer, CLRHeader clrHeader)
@@ -26,8 +23,6 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
             this.Name = buffer.ReadString();
             buffer.IncrementIndexPointer(1);
             this.AbsoluteAddress = (clrHeader.MetaData.RVA - 0x1E00) + this.Offset;
-            this.header = clrHeader;
-            this.buffer = buffer;
         }
 
         public abstract void ProcessTables(AssemblyBuffer buffer);
