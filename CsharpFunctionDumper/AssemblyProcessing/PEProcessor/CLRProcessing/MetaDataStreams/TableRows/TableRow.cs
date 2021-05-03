@@ -2,10 +2,14 @@
 {
     public abstract class TableRow
     {
-        public MetaDataTableType OwnerTable { get; private set; }
-        public TableRow(MetaDataTableType table,AssemblyBuffer buffer)
+        public static MetaDataTableType OwnerTable;
+        public TableRow(AssemblyBuffer buffer)
         {
-            this.OwnerTable = table;
+        }
+
+        public string ReadStringAtOffset(uint offset)
+        {
+            return StringStream.INSTANCE.ReadUntilNull(offset);
         }
 
         public abstract void Read(AssemblyBuffer buffer);
