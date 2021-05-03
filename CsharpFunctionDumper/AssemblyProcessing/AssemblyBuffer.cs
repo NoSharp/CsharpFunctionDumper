@@ -28,7 +28,7 @@ namespace CsharpFunctionDumper.AssemblyProcessing
         /// </summary>
         /// <param name="amount"> the amount of bytes to read. </param>
         /// <returns> The bytes read from the buffer.</returns>
-        private byte[] ReadBytes(uint amount)
+        public byte[] ReadBytes(uint amount)
         {
             byte[] data = new byte[amount];
             
