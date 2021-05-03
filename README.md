@@ -1,5 +1,5 @@
-﻿![alt text](http://creativecommons.org/licenses/by/4.0/) Creative Commons Attribution 4.0 International Licens
-# CSharp Function Dumper
+﻿
+# CSharp Function Dumper [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 
 An application to dump .net PE files, into a nicely formatted output file.
 
@@ -12,4 +12,3 @@ decompiler.
 
 ##Issue?
 Create an issue I'll fix it.
-<a rel="license" href=""><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">e</a>.
