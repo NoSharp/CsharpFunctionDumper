@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.MetaDataStreams;
 using CsharpFunctionDumper.AssemblyProcessing.PEProcessor.MetaDataStreams;
 
 namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing
@@ -32,10 +33,9 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing
         public StreamHeader[] Streams { get; private set; }
 
 
-        public MetaDataHeader(AssemblyBuffer buffer, CLIHeader cliHeader, SectionsHeaders sectionsHeaders)
+        public MetaDataHeader(AssemblyBuffer buffer, CLRHeader clrHeader, SectionsHeaders sectionsHeaders)
         {
-            Console.WriteLine($"{cliHeader.MetaData.RVA} {sectionsHeaders.TextSection.VirtualAddress} ");
-            buffer.SetIndexPointer(cliHeader.MetaData.RVA - 0x1E00);
+            buffer.SetIndexPointer(clrHeader.MetaData.RVA - 0x1E00);
             this.Signature = buffer.ReadDWord();
             this.MajorVersion = buffer.ReadWord();
             this.MinorVersion = buffer.ReadWord();
@@ -47,10 +47,18 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing
 
             this.Streams = new StreamHeader[this.NumberOfStreams];
 
-            for (int i = 0; i < this.NumberOfStreams; i++)
+            this.Streams[(uint)MetaDataStreamType.DEFS_AND_REFS] = new DefsAndRefsStream(buffer, clrHeader,this);
+            this.Streams[(uint)MetaDataStreamType.STRINGS] = new StringStream(buffer, clrHeader);
+
+            foreach (var streamHeader in this.Streams)
             {
-                this.Streams[i] = new StreamHeader(buffer);
+                if (streamHeader == null) continue;
+                streamHeader.CacheBuffer(buffer);
+                streamHeader.ProcessTables(buffer);
             }
+            
+            DefsAndRefsStream defsAndRefsStream = (DefsAndRefsStream)this.Streams[(uint) MetaDataStreamType.DEFS_AND_REFS];
+
         }
 
     }
