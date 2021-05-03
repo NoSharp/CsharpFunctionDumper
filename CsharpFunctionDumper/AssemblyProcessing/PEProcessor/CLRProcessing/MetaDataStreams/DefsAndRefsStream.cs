@@ -169,8 +169,9 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
             
             while (true)
             {
+                if (currentOffset >= tableRows.Count) break; 
                 ParamTableRow methodTableRow = (ParamTableRow) tableRows[currentOffset];
-                if (methodTableRow.Sequence == 0) break;//
+                if (methodTableRow.Sequence == 1) break;
                 methodTableRows.Add(methodTableRow);
                 currentOffset++;
             }

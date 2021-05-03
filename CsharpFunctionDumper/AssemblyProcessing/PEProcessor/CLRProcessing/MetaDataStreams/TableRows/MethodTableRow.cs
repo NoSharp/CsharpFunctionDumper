@@ -1,4 +1,7 @@
-﻿namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.MetaDataStreams.TableRows
+﻿using System.Collections.Generic;
+using System.Text;
+
+namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.MetaDataStreams.TableRows
 {
     public class MethodTableRow : TableRow
     {
@@ -31,7 +34,19 @@
 
         public override string Display()
         {
-            return $"Name: {this.Name} Implementation Flags: {this.ImplementationFlags:x8} Definition Flags: {this.DefinitionFlags:x8} Parameters List Idx: {this.ParamsListIndex} ";
+            StringBuilder funcDef = new StringBuilder();
+            funcDef.Append($"func {this.Name}(");
+            DefsAndRefsStream defsAndRefsStream = DefsAndRefsStream.GetInstance();
+            List<ParamTableRow> paramTableRows = defsAndRefsStream.GetParameterTableRowsFromOffset(this.ParamsListIndex);
+            
+            for (var i = 0; i < paramTableRows.Count; i++)
+            {
+                ParamTableRow paramTableRow = paramTableRows[i];
+                funcDef.Append($"{(i == 0 ? "" : ",")} {paramTableRow.Name}");
+            }
+            
+            funcDef.Append(")");
+            return funcDef.ToString();
         }
         
     }
