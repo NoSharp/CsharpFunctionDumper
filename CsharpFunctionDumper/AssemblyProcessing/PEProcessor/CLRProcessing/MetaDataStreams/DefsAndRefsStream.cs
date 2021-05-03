@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.MetaDataStreams.TableRows;
+using CsharpFunctionDumper.AssemblyProcessing.PEProcessor.MetaDataStreams;
 
 namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.MetaDataStreams
 {
@@ -14,18 +17,27 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
         private MetaDataHeader _metaDataHeader;
         
         public byte HeapOffsetSizes { get; private set; }
+        
         public ulong TablesPresent { get; private set; } // AKA "Valid"
+        
         public ulong TablesSorted { get; private set; }
 
         public uint[] TableLengths { get; private set; }
 
-        public DefsAndRefsStream(AssemblyBuffer buffer, CLRHeader clrHeader, MetaDataHeader metaDataHeader) : base(buffer)
+        public Dictionary<MetaDataTableType, List<TableRow>> TableRows { get; private set; }
+
+        public DefsAndRefsStream(AssemblyBuffer buffer, CLRHeader clrHeader, MetaDataHeader metaDataHeader) : base(buffer,clrHeader)
         {
             this._metaDataHeader = metaDataHeader;
             this.TableLengths = new uint[64];
-            
-            
-            buffer.SetIndexPointer((clrHeader.MetaData.RVA - 0x1E00) + this.Offset);
+            this.TableRows = new Dictionary<MetaDataTableType, List<TableRow>>();
+
+        }
+
+
+        public override void ProcessTables(AssemblyBuffer buffer)
+        {
+            buffer.SetIndexPointer(this.AbsoluteAddress);
             uint val = buffer.ReadDWord(); // Reserved.
             byte major = buffer.ReadByte(); // Major and minor version
             byte minor = buffer.ReadByte(); // Major and minor version
@@ -40,12 +52,12 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
             for( int i = 0; i < 64; i++)
             {
                
-                if (!Enum.IsDefined(typeof(MetaDataTableTypes), i))
+                if (!Enum.IsDefined(typeof(MetaDataTableType), i))
                 {
                     continue;
                 }
 
-                MetaDataTableTypes tableType = (MetaDataTableTypes) i;
+                MetaDataTableType tableType = (MetaDataTableType) i;
                 
                 ulong bitmask = (ulong)1 << (int)tableType;
                 
@@ -55,19 +67,20 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
                 }
             }
             
-
-        }
-
-        
-        
-        private void LoadTableTypes(ulong number)
-        {
-           
-        }
-
-        public void ProcessTable(AssemblyBuffer buffer, uint tableIdx)
-        {
-            //buffer.SetIndexPointer(buffer);
+            this.TableRows[MetaDataTableType.Module] = new List<TableRow>();
+            TableRow row = new ModuleTableRow(buffer);
+            row.Read(buffer);
+            this.TableRows[MetaDataTableType.Module].Add(row);
+            /*
+            foreach (var tableLength in this.TableLengths)
+            {
+                //Console.WriteLine();
+                MetaDataTableType tableType = (MetaDataTableType) tableLength;
+                //uint tableSize = this.TableLengths[tableLength];
+                
+                Console.WriteLine(row.Display());
+                this.TableRows[tableType].Add(row);
+            }*/
         }
 
         public string GetStringFromStringTable(uint idx)
