@@ -4,12 +4,11 @@
     {
         
         public static MetaDataTableType OwnerTable = MetaDataTableType.Param;
-
+        
         public ushort Flags { get; private set; }
-
         public ushort Sequence { get; private set; }
-
         public ushort NameAddresss { get; private set; }
+        
         public string Name { get; private set; }
 
         public ParamTableRow(AssemblyBuffer buffer) : base(buffer)

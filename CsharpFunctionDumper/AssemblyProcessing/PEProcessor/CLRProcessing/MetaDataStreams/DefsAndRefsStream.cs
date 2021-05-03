@@ -100,6 +100,7 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
         }
         
 
+        [Obsolete]
         private void PopulateTableRows(AssemblyBuffer buffer)
         {
             for (int idx = 0; idx < this.TableLengths.Length; idx++)
@@ -133,9 +134,7 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
             }
         }
 
-        public string GetStringFromStringTable(uint idx)
-        {
-            return "";
-        }
+        
+
     }
 }

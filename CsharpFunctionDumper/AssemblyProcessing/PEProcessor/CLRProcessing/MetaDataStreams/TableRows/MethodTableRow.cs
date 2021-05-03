@@ -5,18 +5,13 @@
         public static MetaDataTableType OwnerTable = MetaDataTableType.MethodDef;
 
         public uint RVA { get; private set; }
-
         public ushort ImplementationFlags { get; private set; }
-        
         public ushort DefinitionFlags { get; private set; }
-
         public ushort NameAddress { get; private set; }
-        public string Name { get; private set; }
-
         public ushort Signature { get; private set; }
-
         public ushort ParamsListIndex { get; private set; }
 
+        public string Name { get; private set; }
 
         public MethodTableRow(AssemblyBuffer buffer) : base(buffer)
         {

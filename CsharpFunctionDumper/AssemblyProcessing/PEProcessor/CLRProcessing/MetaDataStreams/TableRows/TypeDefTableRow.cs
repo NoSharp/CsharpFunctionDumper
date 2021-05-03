@@ -5,22 +5,16 @@
         public static MetaDataTableType OwnerTable = MetaDataTableType.TypeDef;
         
         public uint Flags { get; private set; }
-
+        
         public ushort NameAddress { get; private set; }
-        
-        public string Name { get; private set; }
-        
         public ushort NamespaceAddress { get; private set; }
-        public string Namespace { get; private set; }
-        
         public ushort Extends { get; private set; }
-
         public ushort FieldList { get; private set; }
-
         public ushort MethodList { get; private set; }
 
+        public string Namespace { get; private set; }
 
-
+        public string Name { get; private set; }
         public TypeDefTableRow(AssemblyBuffer buffer) : base(buffer)
         {
         }

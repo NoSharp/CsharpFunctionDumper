@@ -3,10 +3,12 @@
     public class ModuleTableRow : TableRow
     {
         public ushort Generation { get; private set; }
-        public ushort Name { get; private set; }
+        public ushort NameAddress { get; private set; }
         public ushort MvId { get; private set; }
         public ushort EncId { get; private set; }
         public ushort EncBaseId { get; private set; }
+
+        public string Name { get; private set; }
 
         public static MetaDataTableType OwnerTable = MetaDataTableType.Module;
         
@@ -17,16 +19,16 @@
         public override void Read(AssemblyBuffer buffer)
         {
             this.Generation = buffer.ReadWord();
-            this.Name = buffer.ReadWord();
+            this.NameAddress = buffer.ReadWord();
             this.MvId = buffer.ReadWord();
             this.EncId = buffer.ReadWord();
             this.EncBaseId = buffer.ReadWord();
+            this.Name = this.ReadStringAtOffset(this.NameAddress);
         }
 
         public override string Display()
         {
-            //@TODO: This is a serious bodge and will be fixed in a following update.
-            return $"Generation: {this.Generation} Offset: {this.Name}: {this.ReadStringAtOffset(this.Name)} MvId: {this.MvId} EncId: {this.EncId}";
+            return $"Generation: {this.Generation} Name: {this.Name} MvId: {this.MvId} EncId: {this.EncId}";
         }
     }
 }
