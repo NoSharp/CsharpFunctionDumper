@@ -8,7 +8,9 @@
         public ushort EncId { get; private set; }
         public ushort EncBaseId { get; private set; }
 
-        public ModuleTableRow(AssemblyBuffer buffer) : base(MetaDataTableType.Assembly, buffer)
+        public static MetaDataTableType OwnerTable = MetaDataTableType.Module;
+        
+        public ModuleTableRow(AssemblyBuffer buffer) : base(buffer)
         {
         }
 
@@ -24,7 +26,7 @@
         public override string Display()
         {
             //@TODO: This is a serious bodge and will be fixed in a following update.
-            return $"Generation: {this.Generation} Offset: {this.Name}: {StringStream.INSTANCE.ReadUntilNull(this.Name)} MvId: {this.MvId} EncId: {this.EncId}";
+            return $"Generation: {this.Generation} Offset: {this.Name}: {this.ReadStringAtOffset(this.Name)} MvId: {this.MvId} EncId: {this.EncId}";
         }
     }
 }
