@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.MetaDataStreams;
+using CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.MetaDataStreams.TableRows;
 using CsharpFunctionDumper.AssemblyProcessing.PEProcessor.MetaDataStreams;
 
 namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing
@@ -55,9 +56,13 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing
             
             this.Streams[(uint)MetaDataStreamType.DEFS_AND_REFS].CacheBuffer(buffer);
             this.Streams[(uint)MetaDataStreamType.DEFS_AND_REFS].ProcessTables(buffer);
-            
-            DefsAndRefsStream defsAndRefsStream = (DefsAndRefsStream)this.Streams[(uint) MetaDataStreamType.DEFS_AND_REFS];
 
+            DefsAndRefsStream defsAndRefsStream = (DefsAndRefsStream) this.Streams[(uint) MetaDataStreamType.DEFS_AND_REFS];
+            foreach (var tableRow in defsAndRefsStream.TableRows[MetaDataTableType.TypeDef])
+            {
+                Console.WriteLine($"{tableRow.Display()}");
+            }
+            
         }
 
     }

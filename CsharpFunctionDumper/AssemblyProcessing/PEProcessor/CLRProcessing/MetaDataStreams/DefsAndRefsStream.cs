@@ -15,6 +15,8 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
     public class DefsAndRefsStream : StreamHeader
     {
 
+        private static DefsAndRefsStream Instance;
+
         private MetaDataHeader _metaDataHeader;
         
         public byte HeapOffsetSizes { get; private set; }
@@ -34,8 +36,14 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
             this._metaDataHeader = metaDataHeader;
             this.TableLengths = new uint[64];
             this.TableRows = new Dictionary<MetaDataTableType, List<TableRow>>();
+            
+            Instance = this;
         }
 
+        public static DefsAndRefsStream GetInstance()
+        {
+            return Instance;
+        }
 
         public override void ProcessTables(AssemblyBuffer buffer)
         {
@@ -99,8 +107,6 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
             return tableTypes;
         }
         
-
-        [Obsolete]
         private void PopulateTableRows(AssemblyBuffer buffer)
         {
             for (int idx = 0; idx < this.TableLengths.Length; idx++)
@@ -126,7 +132,7 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
                     }
 
                     row.Read(buffer);
-                    Console.WriteLine($"Displaying {tableType.ToString()}@{tableIdx}: {row.Display()}");
+                    
                     tableRows.Add(row);
                 }
                 
@@ -134,7 +140,42 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
             }
         }
 
-        
+        public List<MethodTableRow> GetMethodTableRowsFromOffset(int offset)
+        {
+            List<MethodTableRow> methodTableRows = new List<MethodTableRow>();
+            List<TableRow> tableRows = this.TableRows[MetaDataTableType.MethodDef];
+            int currentOffset = offset;
+            methodTableRows.Add((MethodTableRow)tableRows[currentOffset]);
+            currentOffset++;
+            
+            while (true)
+            {
+                if (currentOffset >= tableRows.Count) break; 
+                MethodTableRow methodTableRow = (MethodTableRow) tableRows[currentOffset];
+                if (methodTableRow.Name == ".ctor") break;
+                methodTableRows.Add(methodTableRow);
+                currentOffset++;
+            }
 
+            return methodTableRows;
+        }
+        public List<ParamTableRow> GetParameterTableRowsFromOffset(int offset)
+        {
+            List<ParamTableRow> methodTableRows = new List<ParamTableRow>();
+            List<TableRow> tableRows = this.TableRows[MetaDataTableType.Param];
+            int currentOffset = offset;
+            methodTableRows.Add((ParamTableRow)tableRows[currentOffset]);
+            currentOffset++;
+            
+            while (true)
+            {
+                ParamTableRow methodTableRow = (ParamTableRow) tableRows[currentOffset];
+                if (methodTableRow.Sequence == 0) break;//
+                methodTableRows.Add(methodTableRow);
+                currentOffset++;
+            }
+
+            return methodTableRows;
+        }
     }
 }

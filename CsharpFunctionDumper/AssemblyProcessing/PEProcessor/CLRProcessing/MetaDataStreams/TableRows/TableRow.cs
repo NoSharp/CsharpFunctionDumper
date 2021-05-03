@@ -9,7 +9,19 @@
 
         public string ReadStringAtOffset(uint offset)
         {
-            return StringStream.INSTANCE.ReadUntilNull(offset);
+            return StringStream.GetInstance().ReadUntilNull(offset);
+        }
+
+        public string ReadParamsUntilOffset(uint offset)
+        {
+            string parameterList = "";
+
+            return parameterList;
+        }
+
+        public bool DoesFlagContainBitMask(uint flag, uint mask)
+        {
+            return (flag & mask) != 0;
         }
 
         public abstract void Read(AssemblyBuffer buffer);

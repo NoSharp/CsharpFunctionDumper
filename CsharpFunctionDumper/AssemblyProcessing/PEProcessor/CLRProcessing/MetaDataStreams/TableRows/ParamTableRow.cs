@@ -25,7 +25,7 @@
 
         public override string Display()
         {
-            return $"Flags: {this.Flags:x8} Sequence: {this.Sequence} Name: {this.Name}";
+            return $"{this.Name}";
         }
     }
 }

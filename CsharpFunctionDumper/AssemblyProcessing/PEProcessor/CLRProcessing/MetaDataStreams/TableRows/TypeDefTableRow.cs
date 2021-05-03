@@ -1,9 +1,14 @@
-﻿namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.MetaDataStreams.TableRows
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Text;
+
+namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.MetaDataStreams.TableRows
 {
     public class TypeDefTableRow : TableRow
     {
         public static MetaDataTableType OwnerTable = MetaDataTableType.TypeDef;
-        
+
         public uint Flags { get; private set; }
         
         public ushort NameAddress { get; private set; }
@@ -15,6 +20,20 @@
         public string Namespace { get; private set; }
 
         public string Name { get; private set; }
+        
+        
+        public Dictionary<FieldAttributes, string> FieldPrefixes = new Dictionary<FieldAttributes, string>()
+        {
+            {FieldAttributes.Private, "private"},
+            {FieldAttributes.Public, "public"},
+            {FieldAttributes.Assembly, "internal"},
+            {FieldAttributes.Family, "protected"},
+            {FieldAttributes.FamORAssem, "protected internal"},
+            {FieldAttributes.FamANDAssem, "private protected"},
+            {FieldAttributes.InitOnly, "readonly"},
+            {FieldAttributes.Literal, "const"},
+        };
+        
         public TypeDefTableRow(AssemblyBuffer buffer) : base(buffer)
         {
         }
@@ -33,9 +52,29 @@
 
         }
 
+        public string FormFieldPrefix()
+        {
+            StringBuilder prefix = new StringBuilder();
+
+            foreach (var fieldPrefixesKey in this.FieldPrefixes.Keys)
+            {
+                if(this.DoesFlagContainBitMask(this.Flags, (uint)fieldPrefixesKey))
+                    prefix.Append($"{this.FieldPrefixes[fieldPrefixesKey]} ");
+            }
+
+            return prefix.ToString();
+        }
+
         public override string Display()
         {
-            return $"Flags: {this.Flags:x8} Type Name: {this.Name} Namespace: {this.Namespace}";
+            DefsAndRefsStream defsAndRefsStream = DefsAndRefsStream.GetInstance();
+            StringBuilder classFormat = new StringBuilder();
+            classFormat.Append($"{this.Namespace}.{this.Name}\n");
+            foreach (var methodTableRow in defsAndRefsStream.GetMethodTableRowsFromOffset(this.MethodList))
+            {
+                classFormat.Append($"\t {methodTableRow.Display()}\n");
+            }
+            return classFormat.ToString();
         }
     }
 }
