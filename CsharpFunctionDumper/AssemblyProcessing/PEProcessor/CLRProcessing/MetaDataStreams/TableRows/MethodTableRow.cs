@@ -13,8 +13,9 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
         public ushort NameAddress { get; private set; }
         public ushort Signature { get; private set; }
         public ushort ParamsListIndex { get; private set; }
-
         public string Name { get; private set; }
+
+        public List<byte> MethodBody { get; private set; }
 
         public MethodTableRow(AssemblyBuffer buffer) : base(buffer)
         {
@@ -30,6 +31,28 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
             this.ParamsListIndex = buffer.ReadWord();
 
             this.Name = this.ReadStringAtOffset(this.NameAddress);
+
+            uint oldBufferPos = buffer.GetBufferPosition();
+            
+            buffer.SetIndexPointer(this.RVA);
+            
+            // Do the reading of the function
+            this.ReadFunctionBody(buffer);
+            
+            buffer.SetIndexPointer(oldBufferPos);
+        }
+
+        private void ReadFunctionBody(AssemblyBuffer buffer)
+        {
+            List<byte> methodBody = new List<byte>();
+            while (true)
+            {
+                byte opCode = buffer.ReadByte();
+                methodBody.Add(opCode);
+                if (opCode == 0x2A) break; // When we reach "return" we know this is the end of the function.
+            }
+
+            this.MethodBody = methodBody;
         }
 
         public override string Display()
