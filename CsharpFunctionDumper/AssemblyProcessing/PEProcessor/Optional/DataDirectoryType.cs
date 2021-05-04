@@ -1,4 +1,4 @@
-﻿namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.OptionalHeader
+﻿namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.Optional
 {
     public enum DataDirectoryType
     {

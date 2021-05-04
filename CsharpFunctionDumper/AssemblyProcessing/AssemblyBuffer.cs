@@ -42,6 +42,15 @@ namespace CsharpFunctionDumper.AssemblyProcessing
         }
 
         /// <summary>
+        /// Gets the position within the buffer.
+        /// </summary>
+        /// <returns>The Buffer position</returns>
+        public uint GetBufferPosition()
+        {
+            return this._currentIndex;
+        }
+
+        /// <summary>
         /// Reads 2 bytes from the buffer and converts it into a ushort.
         /// </summary>
         /// <returns>The data read from the buffer.</returns>

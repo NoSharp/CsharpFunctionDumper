@@ -13,8 +13,6 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
         public uint AbsoluteAddress { get; private set; }
 
         protected byte[] _cachedBuffer { get; private set; }
-        
-
 
         public StreamHeader(AssemblyBuffer buffer, CLRHeader clrHeader)
         {

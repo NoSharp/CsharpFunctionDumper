@@ -1,4 +1,5 @@
-﻿namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.OptionalHeader
+﻿
+namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.Optional
 {
     /// <summary>
     /// For more information check:

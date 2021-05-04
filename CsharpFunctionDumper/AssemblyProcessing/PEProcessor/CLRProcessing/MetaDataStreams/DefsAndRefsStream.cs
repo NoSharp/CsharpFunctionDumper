@@ -130,7 +130,7 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
                         Console.WriteLine($"WARNING: No Row type for :{tableType.ToString()}");
                         continue;
                     }
-
+                    row.SetStreamHeaderState(this._metaDataHeader.Streams);
                     row.Read(buffer);
                     
                     tableRows.Add(row);
@@ -159,11 +159,17 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
 
             return methodTableRows;
         }
+        
         public List<ParamTableRow> GetParameterTableRowsFromOffset(int offset)
         {
             List<ParamTableRow> methodTableRows = new List<ParamTableRow>();
             List<TableRow> tableRows = this.TableRows[MetaDataTableType.Param];
             int currentOffset = offset;
+            if (currentOffset >= tableRows.Count)
+            {
+                return methodTableRows;
+            }
+
             methodTableRows.Add((ParamTableRow)tableRows[currentOffset]);
             currentOffset++;
             

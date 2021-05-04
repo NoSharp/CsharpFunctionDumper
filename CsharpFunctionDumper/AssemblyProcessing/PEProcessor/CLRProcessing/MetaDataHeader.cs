@@ -50,6 +50,9 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing
 
             this.Streams[(uint)MetaDataStreamType.DEFS_AND_REFS] = new DefsAndRefsStream(buffer, clrHeader,this);
             this.Streams[(uint)MetaDataStreamType.STRINGS] = new StringStream(buffer, clrHeader);
+            this.Streams[(uint)MetaDataStreamType.BLOB] = new BlobStream(buffer, clrHeader);
+            
+            // There is a specific load order for each stream. Therefore I'm not going to iterate over them.
             
             this.Streams[(uint)MetaDataStreamType.STRINGS].CacheBuffer(buffer);
             this.Streams[(uint)MetaDataStreamType.STRINGS].ProcessTables(buffer);

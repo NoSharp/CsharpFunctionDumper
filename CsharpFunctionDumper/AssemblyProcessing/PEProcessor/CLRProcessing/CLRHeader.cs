@@ -1,4 +1,4 @@
-﻿using CsharpFunctionDumper.AssemblyProcessing.PEProcessor.OptionalHeader;
+﻿using CsharpFunctionDumper.AssemblyProcessing.PEProcessor.Optional;
 
 namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor
 {
@@ -39,7 +39,7 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor
         public DataDirectory ManagedNativeHeader { get; private set; }
 
 
-        public CLRHeader(AssemblyBuffer buffer, OptionalHeader.OptionalHeader header, SectionsHeaders sectionsHeaders)
+        public CLRHeader(AssemblyBuffer buffer, OptionalHeader header, SectionsHeaders sectionsHeaders)
         {
             this.cb = buffer.ReadDWord();
             this.MajorRuntimeVersion = buffer.ReadWord();
