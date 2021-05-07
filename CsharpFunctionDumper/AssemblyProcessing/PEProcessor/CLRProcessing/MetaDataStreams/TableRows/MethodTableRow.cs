@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using CsharpFunctionDumper.AssemblyProcessing.PEProcessor.MetaDataStreams;
 
 namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.MetaDataStreams.TableRows
 {
@@ -61,11 +62,11 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
             funcDef.Append($"func {this.Name}(");
             DefsAndRefsStream defsAndRefsStream = DefsAndRefsStream.GetInstance();
             List<ParamTableRow> paramTableRows = defsAndRefsStream.GetParameterTableRowsFromOffset(this.ParamsListIndex);
-            
+            ((BlobStream) this._streamHeaders[(uint)MetaDataStreamType.BLOB]).GetValueOfSignature(this.Signature);
             for (var i = 0; i < paramTableRows.Count; i++)
             {
                 ParamTableRow paramTableRow = paramTableRows[i];
-                funcDef.Append($"{(i == 0 ? "" : ",")} {paramTableRow.Name}");
+                funcDef.Append($"{(i == 0 ? "" : ",")} {paramTableRow.Display()}");
             }
             
             funcDef.Append(")");
