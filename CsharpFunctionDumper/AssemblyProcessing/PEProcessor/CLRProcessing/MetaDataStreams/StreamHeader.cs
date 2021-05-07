@@ -14,12 +14,14 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
 
         protected byte[] _cachedBuffer { get; private set; }
 
+        protected AssemblyBuffer _cachedAssemblyBuffer { get; private set; }
+
+
         public StreamHeader(AssemblyBuffer buffer, CLRHeader clrHeader)
         {
             this.Offset = buffer.ReadDWord();
             this.Size = buffer.ReadDWord();
-            this.Name = buffer.ReadString();
-            buffer.IncrementIndexPointer(1);
+            this.Name = buffer.ReadDwordAlignedString();
             this.AbsoluteAddress = (clrHeader.MetaData.RVA - 0x1E00) + this.Offset;
         }
 
@@ -30,7 +32,9 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
            buffer.SetIndexPointer(this.AbsoluteAddress);
             this._cachedBuffer = new byte[this.Size];
             this._cachedBuffer = buffer.ReadBytes(this.Size);
+            this._cachedAssemblyBuffer = new AssemblyBuffer("", this._cachedBuffer);
         }
-
+        
+        
     }
 }
