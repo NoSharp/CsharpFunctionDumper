@@ -8,7 +8,7 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
     {
         public static MetaDataTableType OwnerTable;
 
-        private StreamHeader[] _streamHeaders;
+        protected StreamHeader[] _streamHeaders;
         
         public TableRow(AssemblyBuffer buffer)
         {
