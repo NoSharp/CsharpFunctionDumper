@@ -4,18 +4,11 @@ namespace CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.Meta
 {
     public class StringStream : StreamHeader
     {
-        private static StringStream Instance;
+   
         public StringStream(AssemblyBuffer buffer, CLRHeader clrHeader) : base(buffer,clrHeader)
         {
-            Instance = this;
-            
         }
-
-        public static StringStream GetInstance()
-        {
-            return Instance;
-        }
-
+        
         
         public string ReadUntilNull(uint startOffset)
         {
