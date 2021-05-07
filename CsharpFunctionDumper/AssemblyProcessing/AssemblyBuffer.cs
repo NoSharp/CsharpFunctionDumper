@@ -42,6 +42,32 @@ namespace CsharpFunctionDumper.AssemblyProcessing
         }
 
         /// <summary>
+        /// Reads a string up to the next 4 byte boundary.
+        /// </summary>
+        /// <returns>The string read, minus the null terminators.</returns>
+        public string ReadDwordAlignedString()
+        {
+            string converted = "";
+            byte val;
+            while(true)
+            {
+                val = ReadByte();
+                
+                if (val == 0x0)
+                {
+                    // We're reading a Null terminated string so break out of the loop.
+                    break;
+                }
+
+                converted += (char) val;
+            }
+
+            this._currentIndex += 4 - (this._currentIndex % 4);
+                
+            return converted;
+        }
+
+        /// <summary>
         /// Gets the position within the buffer.
         /// </summary>
         /// <returns>The Buffer position</returns>
