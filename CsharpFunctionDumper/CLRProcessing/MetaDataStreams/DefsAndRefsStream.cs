@@ -93,7 +93,7 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams
             return (from t in Assembly.GetExecutingAssembly()
                     .GetTypes()
                     .Where(x => x.Namespace ==
-                        "CsharpFunctionDumper.AssemblyProcessing.PEProcessor.CLRProcessing.MetaDataStreams.TableRows")
+                        "CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows")
                 where !t.IsAbstract
                 select t).ToList();
         }
