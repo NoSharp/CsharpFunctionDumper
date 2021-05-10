@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using CsharpFunctionDumper.AssemblyProcessing;
+using CsharpFunctionDumper.CLRProcessing.MetaDataStreams.Signatures;
 
 namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
 {
@@ -62,18 +63,25 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
             funcDef.Append($"func {this.Name}(");
             DefsAndRefsStream defsAndRefsStream = DefsAndRefsStream.GetInstance();
             List<ParamTableRow> paramTableRows = defsAndRefsStream.GetParameterTableRowsFromOffset(this.ParamsListIndex);
-            string method = ((BlobStream) this._streamHeaders[(uint)MetaDataStreamType.BLOB]).GetValueOfSignature(this.Signature);
+            MethodDefSignature method = this.GetBlobStream().GetMethodDefValue(this.Signature);
             for (var i = 0; i < paramTableRows.Count; i++)
             {
                 ParamTableRow paramTableRow = paramTableRows[i];
-                funcDef.Append($"{(i == 0 ? "" : ",")} {paramTableRow.Display()}");
+
+                
+                if (i < method.ParameterTypes.Count)
+                {
+                    ParameterType parameterType = method.ParameterTypes[i];
+                    funcDef.Append($"{(i == 0 ? "" : ",")} {parameterType.Type.ToString()} {paramTableRow.Display()}");
+                }
+                else
+                {
+                    funcDef.Append($"{(i == 0 ? "" : ",")}{paramTableRow.Display()}");
+                }
+
             }
-            
-            funcDef.Append("){\n");
-            
-            funcDef.Append(method);
-            
-            funcDef.Append("\n}");
+
+            funcDef.Append($") -> {method.ReturnType.Type.ToString()}");
             return funcDef.ToString();
         }
         
