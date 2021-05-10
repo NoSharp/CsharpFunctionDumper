@@ -66,7 +66,7 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
 
         public override string Display()
         {
-            return $"{Flags:x8} {this.GetParamPrefix()} {this.Name}";
+            return $"{this.GetParamPrefix()} {this.Name}";
         }
     }
 }
