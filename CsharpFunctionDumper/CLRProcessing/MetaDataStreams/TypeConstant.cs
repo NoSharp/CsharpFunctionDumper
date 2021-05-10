@@ -5,7 +5,7 @@
     /// Sources:
     ///     https://docs.microsoft.com/en-us/dotnet/framework/unmanaged-api/metadata/corelementtype-enumeration
     /// </summary>
-    public enum TypeConstants
+    public enum TypeConstant
     {
         ELEMENT_TYPE_END            = 0x0,
         ELEMENT_TYPE_VOID           = 0x1,
