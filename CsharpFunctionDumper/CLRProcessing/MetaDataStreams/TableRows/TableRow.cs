@@ -27,6 +27,11 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
             this._streamHeaders = streamHeaders;
         }
 
+        protected BlobStream GetBlobStream()
+        {
+            return ((BlobStream) this._streamHeaders[(uint)MetaDataStreamType.BLOB]);
+        }
+
         /// <summary>
         /// Used to read from the Buffer instance.
         /// </summary>
