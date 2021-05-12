@@ -5,8 +5,8 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
     public class TypeRefTableRow: TableRow
     {
         public ushort ResolutionScope { get; private set; }
-        public ushort NameAddress { get; private set; }
-        public ushort NamespaceAddress { get; private set; }
+        public uint NameAddress { get; private set; }
+        public uint NamespaceAddress { get; private set; }
 
         public string Namespace { get; private set; }
         public string Name { get; private set; }
@@ -20,8 +20,9 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
         public override void Read(AssemblyBuffer buffer)
         {
             this.ResolutionScope = buffer.ReadWord();
-            this.NameAddress = buffer.ReadWord();
-            this.NamespaceAddress = buffer.ReadWord();
+            this.NameAddress = this.ReadStringTableOffset(buffer);
+            this.NamespaceAddress = this.ReadStringTableOffset(buffer);
+            
             this.Name = this.ReadStringAtOffset(this.NameAddress);
             this.Namespace = this.ReadStringAtOffset(this.NamespaceAddress);
 

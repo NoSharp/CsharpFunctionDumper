@@ -32,8 +32,8 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams
 
         public Dictionary<MetaDataTableType, List<TableRow>> TableRows { get; private set; }
 
-        public DefsAndRefsStream(AssemblyBuffer buffer, CLRHeader clrHeader, MetaDataHeader metaDataHeader) : base(
-            buffer, clrHeader)
+        public DefsAndRefsStream(AssemblyBuffer buffer, CLRHeader clrHeader, MetaDataHeader metaDataHeader) : 
+            base(buffer, clrHeader)
         {
             this._metaDataHeader = metaDataHeader;
             this.TableLengths = new uint[64];
@@ -47,14 +47,43 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams
             return Instance;
         }
 
+        public uint ReadBlobOffset(AssemblyBuffer buffer)
+        {
+            if ((this.HeapOffsetSizes & (byte)HeapOffsetSize.BlobTableIndexOversize) != 0)
+            {
+                return buffer.ReadDWord();
+            }
+
+            return buffer.ReadWord();
+        }
+        
+        public uint ReadStringOffset(AssemblyBuffer buffer)
+        {
+            if ((this.HeapOffsetSizes & (byte)HeapOffsetSize.StringTableIndexOversize) != 0)
+            {
+                return buffer.ReadDWord();
+            }
+
+            return buffer.ReadWord();
+        }
+        
+        public uint ReadGuidOffset(AssemblyBuffer buffer)
+        {
+            if ((this.HeapOffsetSizes & (byte)HeapOffsetSize.GuidTableIndexOversize) != 0)
+            {
+                return buffer.ReadDWord();
+            }
+
+            return buffer.ReadWord();
+        }
+
         public override void ProcessTables(AssemblyBuffer buffer)
         {
             buffer.SetIndexPointer(this.AbsoluteAddress);
             uint val = buffer.ReadDWord(); // Reserved.
             byte major = buffer.ReadByte(); // Major and minor version
             byte minor = buffer.ReadByte(); // Major and minor version
-            this.HeapOffsetSizes =
-                buffer.ReadByte(); // Bit flags for the heap index width. Ref: https://www.codeproject.com/Articles/12585/The-NET-File-Format
+            this.HeapOffsetSizes = buffer.ReadByte(); // Bit flags for the heap index width. Ref: https://www.codeproject.com/Articles/12585/The-NET-File-Format
 
             buffer.ReadByte(); // Padding byte.
 
@@ -82,7 +111,8 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams
 
         private MetaDataTableType GetMetaTableTypeFromType(Type type)
         {
-            return (MetaDataTableType) type.GetField("OwnerTable", BindingFlags.Static | BindingFlags.Public)
+            return (MetaDataTableType) type
+                .GetField("OwnerTable", BindingFlags.Static | BindingFlags.Public)
                 .GetValue(null);
         }
 
@@ -114,6 +144,7 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams
                 MetaDataTableType tableType = (MetaDataTableType) idx;
                 // These weren't valid in the present DWORD.
                 if (this.TableLengths[idx] == 0) continue;
+                
                 if (!this.TableRowTypes.ContainsKey(tableType))
                 {
                     Console.WriteLine($"WARNING: NO TYPE HANDLER FOR: {tableType.ToString()}");
@@ -141,19 +172,29 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams
             }
         }
 
-        public List<MethodTableRow> GetMethodTableRowsFromOffset(int offset)
+        private uint ResolveEndOfMethodList(int idxInTableRows)
         {
-            List<MethodTableRow> methodTableRows = new List<MethodTableRow>();
-            List<TableRow> tableRows = this.TableRows[MetaDataTableType.MethodDef];
-            int currentOffset = offset;
-            methodTableRows.Add((MethodTableRow) tableRows[currentOffset]);
-            currentOffset++;
+            var typeDefRows = this.TableRows[MetaDataTableType.TypeDef];
+            var methodDefRows = this.TableRows[MetaDataTableType.MethodDef];
+            TypeDefTableRow row = (TypeDefTableRow)typeDefRows[idxInTableRows];
+            //Console.WriteLine($"{idxInTableRows + 1 >= typeDefRows.Count}: {(uint)methodDefRows.Count - 1} {((TypeDefTableRow) typeDefRows[idxInTableRows + 1])?.MethodList}");
+            return idxInTableRows + 1 >= typeDefRows.Count
+                ? (uint)methodDefRows.Count - 1
+                : ((TypeDefTableRow) typeDefRows[idxInTableRows + 1]).MethodList;
+        }
 
-            while (true)
-            {
-                if (currentOffset >= tableRows.Count) break;
-                MethodTableRow methodTableRow = (MethodTableRow) tableRows[currentOffset];
-                if (methodTableRow.Name == ".ctor") break;
+        public List<MethodTableRow> GetMethodTableRowsFromTypeDef(TypeDefTableRow typeDef)
+        {
+            int posInTableRows = this.TableRows[MetaDataTableType.TypeDef].FindIndex((x)=> x == typeDef);
+            
+            List<MethodTableRow> methodTableRows = new List<MethodTableRow>();
+            List<TableRow> methodRows = this.TableRows[MetaDataTableType.MethodDef];
+            
+            int currentOffset = typeDef.MethodList - 1;
+            int endOfList = (int)ResolveEndOfMethodList(posInTableRows) - 1;
+            int deltaMethodList = endOfList - currentOffset;
+            for(int i =0; i < deltaMethodList ; i++){
+                MethodTableRow methodTableRow = (MethodTableRow) methodRows[currentOffset];
                 methodTableRows.Add(methodTableRow);
                 currentOffset++;
             }

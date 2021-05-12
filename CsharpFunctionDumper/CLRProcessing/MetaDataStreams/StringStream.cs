@@ -5,7 +5,8 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams
     public class StringStream : StreamHeader
     {
    
-        public StringStream(AssemblyBuffer buffer, CLRHeader clrHeader) : base(buffer,clrHeader)
+        public StringStream(AssemblyBuffer buffer, CLRHeader clrHeader) : 
+            base(buffer, clrHeader)
         {
         }
         
@@ -17,7 +18,7 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams
             byte val;
             while(true)
             {
-                val = this._cachedBuffer[startOffset];
+                val = this.CachedBuffer[startOffset];
                 
                 if (val == 0x0)
                 {

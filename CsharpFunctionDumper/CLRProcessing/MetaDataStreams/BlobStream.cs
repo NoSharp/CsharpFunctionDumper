@@ -13,21 +13,22 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams
     /// </summary>
     public class BlobStream : StreamHeader
     {
-        public BlobStream(AssemblyBuffer buffer, CLRHeader clrHeader) : base(buffer, clrHeader)
+        public BlobStream(AssemblyBuffer buffer, CLRHeader clrHeader) : 
+            base(buffer, clrHeader)
         {
         }
 
         public uint GetSignatureAtOffset(uint offset)
         {
-            return _cachedBuffer[offset];
+            return CachedBuffer[offset];
         }
 
         public MethodDefSignature GetMethodDefValue(uint signatureOffset)
         {
-            _cachedAssemblyBuffer.SetIndexPointer(signatureOffset);
+            CachedAssemblyBuffer.SetIndexPointer(signatureOffset);
             
             MethodDefSignature signature = new MethodDefSignature();
-            signature.PopulateFields(_cachedAssemblyBuffer);
+            signature.PopulateFields(CachedAssemblyBuffer);
             
             return signature;
         }

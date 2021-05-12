@@ -5,10 +5,10 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
     public class ModuleTableRow : TableRow
     {
         public ushort Generation { get; private set; }
-        public ushort NameAddress { get; private set; }
-        public ushort MvId { get; private set; }
-        public ushort EncId { get; private set; }
-        public ushort EncBaseId { get; private set; }
+        public uint NameAddress { get; private set; }
+        public uint MvId { get; private set; }
+        public uint EncId { get; private set; }
+        public uint EncBaseId { get; private set; }
 
         public string Name { get; private set; }
 
@@ -21,10 +21,10 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
         public override void Read(AssemblyBuffer buffer)
         {
             this.Generation = buffer.ReadWord();
-            this.NameAddress = buffer.ReadWord();
-            this.MvId = buffer.ReadWord();
-            this.EncId = buffer.ReadWord();
-            this.EncBaseId = buffer.ReadWord();
+            this.NameAddress = this.ReadStringTableOffset(buffer);
+            this.MvId = this.ReadGuidOffset(buffer);
+            this.EncId = this.ReadGuidOffset(buffer);
+            this.EncBaseId = this.ReadGuidOffset(buffer);
             this.Name = this.ReadStringAtOffset(this.NameAddress);
         }
 

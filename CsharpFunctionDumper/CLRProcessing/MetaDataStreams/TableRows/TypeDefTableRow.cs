@@ -11,8 +11,8 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
 
         public uint Flags { get; private set; }
         
-        public ushort NameAddress { get; private set; }
-        public ushort NamespaceAddress { get; private set; }
+        public uint NameAddress { get; private set; }
+        public uint NamespaceAddress { get; private set; }
         public ushort Extends { get; private set; }
         public ushort FieldList { get; private set; }
         public ushort MethodList { get; private set; }
@@ -41,8 +41,8 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
         public override void Read(AssemblyBuffer buffer)
         {
             this.Flags = buffer.ReadDWord();
-            this.NameAddress = buffer.ReadWord();
-            this.NamespaceAddress = buffer.ReadWord();
+            this.NameAddress = this.ReadStringTableOffset(buffer);
+            this.NamespaceAddress = this.ReadStringTableOffset(buffer);
             this.Extends = buffer.ReadWord();
             this.FieldList = buffer.ReadWord();
             this.MethodList = buffer.ReadWord();
@@ -70,7 +70,7 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
             DefsAndRefsStream defsAndRefsStream = DefsAndRefsStream.GetInstance();
             StringBuilder classFormat = new StringBuilder();
             classFormat.Append($"{this.Namespace}.{this.Name}\n");
-            foreach (var methodTableRow in defsAndRefsStream.GetMethodTableRowsFromOffset(this.MethodList))
+            foreach (var methodTableRow in defsAndRefsStream.GetMethodTableRowsFromTypeDef(this))
             {
                 classFormat.Append($"\t {methodTableRow.Display()}\n");
             }

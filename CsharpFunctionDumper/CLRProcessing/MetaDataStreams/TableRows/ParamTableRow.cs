@@ -10,7 +10,7 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
         
         public ushort Flags { get; private set; }
         public ushort Sequence { get; private set; }
-        public ushort NameAddresss { get; private set; }
+        public uint NameAddresss { get; private set; }
         public string Name { get; private set; }
 
 
@@ -22,7 +22,7 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
         {
             this.Flags = buffer.ReadWord();
             this.Sequence = buffer.ReadWord();
-            this.NameAddresss = buffer.ReadWord();
+            this.NameAddresss = this.ReadStringTableOffset(buffer);
             this.Name = this.ReadStringAtOffset(this.NameAddresss);
         }
 

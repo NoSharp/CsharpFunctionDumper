@@ -12,6 +12,27 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
         {
         }
 
+        protected DefsAndRefsStream GetDefsAndRefsStream()
+        {
+            return (DefsAndRefsStream)this._streamHeaders[(uint) MetaDataStreamType.DEFS_AND_REFS];
+        }
+
+        protected uint ReadStringTableOffset(AssemblyBuffer buffer)
+        {
+            return this.GetDefsAndRefsStream().ReadStringOffset(buffer);
+        }
+
+        protected uint ReadBlobTableOffset(AssemblyBuffer buffer)
+        {
+            return this.GetDefsAndRefsStream().ReadBlobOffset(buffer);
+        }
+
+        protected uint ReadGuidOffset(AssemblyBuffer buffer)
+        {
+            return this.GetDefsAndRefsStream().ReadGuidOffset(buffer);
+        }
+
+        
         public string ReadStringAtOffset(uint offset)
         {
             return ((StringStream)this._streamHeaders[(uint)MetaDataStreamType.STRINGS]).ReadUntilNull(offset);

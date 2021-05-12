@@ -12,10 +12,10 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams
 
         public uint AbsoluteAddress { get; private set; }
 
-        protected byte[] _cachedBuffer { get; private set; }
+        protected byte[] CachedBuffer { get; private set; }
 
-        protected AssemblyBuffer _cachedAssemblyBuffer { get; private set; }
-
+        protected AssemblyBuffer CachedAssemblyBuffer { get; private set; }
+        
 
         public StreamHeader(AssemblyBuffer buffer, CLRHeader clrHeader)
         {
@@ -30,9 +30,9 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams
         public void CacheBuffer(AssemblyBuffer buffer)
         {
            buffer.SetIndexPointer(this.AbsoluteAddress);
-            this._cachedBuffer = new byte[this.Size];
-            this._cachedBuffer = buffer.ReadBytes(this.Size);
-            this._cachedAssemblyBuffer = new AssemblyBuffer("", this._cachedBuffer);
+            this.CachedBuffer = new byte[this.Size];
+            this.CachedBuffer = buffer.ReadBytes(this.Size);
+            this.CachedAssemblyBuffer = new AssemblyBuffer("", this.CachedBuffer);
         }
         
         

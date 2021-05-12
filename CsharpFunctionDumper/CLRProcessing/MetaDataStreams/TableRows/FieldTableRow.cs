@@ -6,13 +6,13 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
     {
         public static MetaDataTableType OwnerTable = MetaDataTableType.Field;
 
-        public ushort NameAddress { get; private set; }
+        public uint NameAddress { get; private set; }
         
         public string Name { get; private set; }
 
         public ushort Flags { get; private set; }
 
-        public ushort Signature { get; private set; }
+        public uint Signature { get; private set; }
         
 
         public FieldTableRow(AssemblyBuffer buffer) : base(buffer)
@@ -22,8 +22,8 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
         public override void Read(AssemblyBuffer buffer)
         {
             this.Flags = buffer.ReadWord();
-            this.NameAddress = buffer.ReadWord();
-            this.Signature = buffer.ReadWord();
+            this.NameAddress = this.ReadStringTableOffset(buffer);
+            this.Signature = this.ReadBlobTableOffset(buffer);
 
             this.Name = this.ReadStringAtOffset(this.NameAddress);
         }

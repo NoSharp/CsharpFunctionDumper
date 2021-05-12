@@ -49,6 +49,7 @@ namespace CsharpFunctionDumper.CLRProcessing
 
             this.Streams[(uint)MetaDataStreamType.DEFS_AND_REFS] = new DefsAndRefsStream(buffer, clrHeader,this);
             this.Streams[(uint)MetaDataStreamType.STRINGS] = new StringStream(buffer, clrHeader);
+            // These are boiler plate.
             this.Streams[(uint)MetaDataStreamType.US] = new StringStream(buffer, clrHeader);
             this.Streams[(uint)MetaDataStreamType.GUID] = new StringStream(buffer, clrHeader);
             this.Streams[(uint)MetaDataStreamType.BLOB] = new BlobStream(buffer, clrHeader);

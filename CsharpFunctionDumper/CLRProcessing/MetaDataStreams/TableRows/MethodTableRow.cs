@@ -12,8 +12,8 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
         public uint RVA { get; private set; }
         public ushort ImplementationFlags { get; private set; }
         public ushort DefinitionFlags { get; private set; }
-        public ushort NameAddress { get; private set; }
-        public ushort Signature { get; private set; }
+        public uint NameAddress { get; private set; }
+        public uint Signature { get; private set; }
         public ushort ParamsListIndex { get; private set; }
         public string Name { get; private set; }
 
@@ -28,8 +28,8 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
             this.RVA = buffer.ReadDWord();
             this.ImplementationFlags = buffer.ReadWord();
             this.DefinitionFlags = buffer.ReadWord();
-            this.NameAddress = buffer.ReadWord();
-            this.Signature = buffer.ReadWord();
+            this.NameAddress = this.ReadStringTableOffset(buffer);
+            this.Signature = this.ReadBlobTableOffset(buffer);
             this.ParamsListIndex = buffer.ReadWord();
 
             this.Name = this.ReadStringAtOffset(this.NameAddress);
@@ -61,13 +61,15 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
         {
             StringBuilder funcDef = new StringBuilder();
             funcDef.Append($"func {this.Name}(");
+            
             DefsAndRefsStream defsAndRefsStream = DefsAndRefsStream.GetInstance();
             List<ParamTableRow> paramTableRows = defsAndRefsStream.GetParameterTableRowsFromOffset(this.ParamsListIndex);
+            
             MethodDefSignature method = this.GetBlobStream().GetMethodDefValue(this.Signature);
+            
             for (var i = 0; i < paramTableRows.Count; i++)
             {
                 ParamTableRow paramTableRow = paramTableRows[i];
-
                 
                 if (i < method.ParameterTypes.Count)
                 {
