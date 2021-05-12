@@ -13,12 +13,11 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '2.1.x'
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v1
-        with:
           dotnet-version: '3.1.x'
       - run: dotnet build CsharpFunctionDumper.sln
+      - name: Compress
+        run: Compress-Archive CsharpFunctionDumper/bin/Debug/netcoreapp3.1/* CSharpFunctionDumper.zip
+        shell: powershell
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -26,5 +25,4 @@ jobs:
           prerelease: true
           title: "CSharpFunctionDumper"
           files: |
-            CsharpFunctionDumper/bin/Release/CsharpFunctionDumper.dll
-            CsharpFunctionDumper/bin/Release/CsharpFunctionDumper.exe
+            CSharpFunctionDumper.zip
