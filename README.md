@@ -13,7 +13,7 @@ decompiler.
 ## How?
 The commands:
 ```
-CsFuncDump.exe --in myAssemblyPath.dll --out DumpedFunctions.txt
+CsharpFunctionDumper.exe --in myAssemblyPath.dll --out DumpedFunctions.txt
 ```
 
 ## Issue?
