@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using CsharpFunctionDumper.AssemblyProcessing;
 using CsharpFunctionDumper.CLRProcessing.MetaDataStreams;
 
@@ -62,13 +63,18 @@ namespace CsharpFunctionDumper.CLRProcessing
             
             this.Streams[(uint)MetaDataStreamType.DEFS_AND_REFS].CacheBuffer(buffer);
             this.Streams[(uint)MetaDataStreamType.DEFS_AND_REFS].ProcessTables(buffer);
+        }
 
+        public string OutputData()
+        {
             DefsAndRefsStream defsAndRefsStream = (DefsAndRefsStream) this.Streams[(uint) MetaDataStreamType.DEFS_AND_REFS];
+            StringBuilder builder = new StringBuilder();
             foreach (var tableRow in defsAndRefsStream.TableRows[MetaDataTableType.TypeDef])
             {
-                Console.WriteLine($"{tableRow.Display()}");
+                builder.AppendLine(tableRow.Display());
             }
-            
+
+            return builder.ToString();
         }
 
     }

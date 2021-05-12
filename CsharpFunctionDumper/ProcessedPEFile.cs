@@ -45,5 +45,10 @@ namespace CsharpFunctionDumper
             return new ProcessedPEFile(assemblyBuffer);
         }
 
+        public string GetOutput()
+        {
+            return this.MetaDataHeader.OutputData();
+        }
+
     }
 }
