@@ -7,6 +7,7 @@ namespace CsharpFunctionDumper.CLRProcessing.MetaDataStreams.TableRows
         public static MetaDataTableType OwnerTable = MetaDataTableType.Field;
 
         public ushort NameAddress { get; private set; }
+        
         public string Name { get; private set; }
 
         public ushort Flags { get; private set; }
