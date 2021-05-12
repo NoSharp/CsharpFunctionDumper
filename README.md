@@ -10,5 +10,11 @@ and the parser is implemented in it's entirety is implemented here. You can also
 use this application programatically instead of having to rely on a heavy
 decompiler.
 
+## How?
+The commands:
+```
+CsFuncDump.exe --in myAssemblyPath.dll --out DumpedFunctions.txt
+```
+
 ## Issue?
-Create an issue I'll fix it.
+Check if any issues have existed before for it, if not, then create an issue. There's not template for it just make sure it contains your environment you're running this on.
